@@ -16,6 +16,12 @@ class FixedLenghtTest extends FlatSpec with Matchers {
   }
 
   it should "get deserialized" in {
+    import FLEncoder.fixed
+
+    implicit val a = fixed((s: String) => s, 10)
+    implicit val b = fixed((s: Int) => s.toString, 3, Alignment.Right)
+    implicit val c = fixed((s: Boolean) => s.toString, 5)
+
     FLParser.encode(exampleC) shouldEqual exampleS
   }
 
@@ -30,16 +36,15 @@ case class Employee(name: String,
 
 object Employee {
 
-  implicit val encoder =
-    FixedLenght((s: String) => s, (s: String) => s, 0, 10) ::
-    FixedLenght((s: Int) => s.toString, _.toInt, 10, 3, Alignment.Right) ::
-    FixedLenght((s: Boolean) => s.toString, _.toBoolean, 13, 5) ::
-    HNil
+  //    FixedLenght( ::
+  //    FixedLenght(, _.toInt, 10, 3, Alignment.Right) ::
+  //    FixedLenght(, _.toBoolean, 13, 5) ::
+  import FLEncoder.fixed
 
-//  implicit def encoder: FLEncoder[Employee] = new FLEncoder[Employee] {
-//    def encode(obj: Employee): String = {
-//      ???
-//    }
-//  }
+  implicit val employeeEncoder =
+    fixed((s: String) => s, 10) ::
+      fixed((s: Int) => s.toString, 3, Alignment.Right) ::
+      fixed((s: Boolean) => s.toString, 5) :: HNil
+
 
 }
