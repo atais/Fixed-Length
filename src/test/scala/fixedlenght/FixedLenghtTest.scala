@@ -15,9 +15,9 @@ class FixedLenghtTest extends FlatSpec with Matchers {
 
   it should "get deserialized" in {
     // uncomment those to get it working :-)
-    //    implicit val a = fixed((s: String) => s, 10)
-    //    implicit val b = fixed((s: Int) => s.toString, 3, Alignment.Right)
-    //    implicit val c = fixed((s: Boolean) => s.toString, 5)
+    implicit val a = fixed((s: String) => s, 10)
+    implicit val b = fixed((s: Int) => s.toString, 3, Alignment.Right)
+    implicit val c = fixed((s: Boolean) => s.toString, 5)
 
     FLParser.encode(exampleC) shouldEqual exampleS
   }
