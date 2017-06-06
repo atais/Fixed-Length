@@ -4,6 +4,7 @@ package test
   * Created by msiatkowski on 06.06.17.
   */
 
+import scodec.{Transform, Transformer}
 import shapeless._
 
 trait FLEncoder[A] {
@@ -42,27 +43,28 @@ object FLEncoder extends ProductTypeClassCompanion[FLEncoder] {
   }
 }
 
-case class Employee(name: String, number: Int, manager: Boolean)
+case class Employee(name: String, surname: String, number: Int, manager: Boolean)
 
 object Employee {
 
   import FLEncoder.fixed
 
-  implicit val employeeEncoder =
+  implicit val employeeEncoder: ::[FLEncoder[String], ::[FLEncoder[String], ::[FLEncoder[Int], ::[FLEncoder[Boolean], HNil]]]] =
     fixed((s: String) => s) ::
-      fixed((s: Int) => s.toString) ::
-      fixed((s: Boolean) => s.toString) ::
+    fixed((s: String) => s) ::
+    fixed((s: Int) => s.toString) ::
+    fixed((s: Boolean) => s.toString) ::
       HNil
+
+//    implicit val a = fixed((s: String) => s)
+//    implicit val b = fixed((s: Int) => s.toString)
+//    implicit val c = fixed((s: Boolean) => s.toString)
 }
 
 object Main extends App {
-  val example = Employee("Stefan", 10, true)
+  val example = Employee("Stefan", "aaa", 10, true)
 
   import FLEncoder._
-
-//  implicit val a = fixed((s: String) => s)
-//  implicit val b = fixed((s: Int) => s.toString)
-//  implicit val c = fixed((s: Boolean) => s.toString)
 
   println(encode(example))
 
