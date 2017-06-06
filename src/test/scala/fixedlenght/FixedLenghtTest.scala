@@ -1,6 +1,7 @@
 package fixedlenght
 
 import org.scalatest.{FlatSpec, Matchers}
+import shapeless.HNil
 
 /**
   * Created by SAnders on 03.11.2016.
@@ -25,26 +26,20 @@ class FixedLenghtTest extends FlatSpec with Matchers {
 // manager @FixedLenght(13, 5)
 case class Employee(name: String,
                     number: Int,
-                    manager: Boolean) {
-
-  def desc: List[FixedLenght[_]] = {
-    List(
-      FixedLenght(name, (s: String) => s, (s: String) => s, 0, 10),
-      FixedLenght(number, (s: Int) => s.toString, _.toInt, 10, 3, Alignment.Right),
-      FixedLenght(manager, (s: Boolean) => s.toString, _.toBoolean, 13, 5)
-    )
-  }
-
-}
+                    manager: Boolean)
 
 object Employee {
 
-  implicit def encoder: FLEncoder[Employee] = new FLEncoder[Employee] {
-    def encode(obj: Employee): String = {
-      obj.desc.map(f => {
-        f.write
-      }).foldLeft("")(_ + _)
-    }
-  }
+  implicit val encoder =
+    FixedLenght((s: String) => s, (s: String) => s, 0, 10) ::
+    FixedLenght((s: Int) => s.toString, _.toInt, 10, 3, Alignment.Right) ::
+    FixedLenght((s: Boolean) => s.toString, _.toBoolean, 13, 5) ::
+    HNil
+
+//  implicit def encoder: FLEncoder[Employee] = new FLEncoder[Employee] {
+//    def encode(obj: Employee): String = {
+//      ???
+//    }
+//  }
 
 }
