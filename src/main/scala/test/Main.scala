@@ -4,14 +4,15 @@ package test
   * Created by msiatkowski on 06.06.17.
   */
 
-import scodec.{Transform, Transformer}
 import shapeless._
 
-trait FLEncoder[A] {
+trait FLEncoder[A] { self =>
   def encode(obj: A): String
+
+  def comap[B](f: B => A): FLEncoder[B] = FLEncoder.fixed[B](obj => encode(f(obj)))
 }
 
-object FLEncoder extends ProductTypeClassCompanion[FLEncoder] {
+object FLEncoder /*extends ProductTypeClassCompanion[FLEncoder] */{
 
   def encode[A](obj: A)(implicit enc: FLEncoder[A]) = enc.encode(obj)
 
@@ -22,25 +23,10 @@ object FLEncoder extends ProductTypeClassCompanion[FLEncoder] {
     }
   }
 
-  // https://stackoverflow.com/questions/24321482/composing-typeclasses-for-tuples-in-scala
-  // https://www.scala-exercises.org/shapeless/auto_typeclass_derivation
-  override val typeClass: ProductTypeClass[FLEncoder] = new ProductTypeClass[FLEncoder] {
-
-    override def product[H, T <: HList](ch: FLEncoder[H], ct: FLEncoder[T]): FLEncoder[H :: T] = {
-      new FLEncoder[H :: T] {
-        override def encode(obj: H :: T): String = ch.encode(obj.head) + ct.encode(obj.tail)
-      }
+    implicit class EncoderAsGeneric[L <: HList, I <: HList](l: L)(implicit L: ListOfEncoder.Aux[L, I]) {
+      def as[E](implicit gen: Generic.Aux[E, I]) = L.merge(l).comap(gen.to)
     }
 
-    override def emptyProduct: FLEncoder[HNil] = new FLEncoder[HNil] {
-      override def encode(obj: HNil): String = ""
-    }
-
-    override def project[F, G](instance: => FLEncoder[G], to: (F) => G, from: (G) => F): FLEncoder[F] =
-      new FLEncoder[F] {
-        override def encode(obj: F): String = instance.encode(to(obj))
-      }
-  }
 }
 
 case class Employee(name: String, surname: String, number: Int, manager: Boolean)
@@ -49,23 +35,38 @@ object Employee {
 
   import FLEncoder.fixed
 
-  implicit val employeeEncoder: ::[FLEncoder[String], ::[FLEncoder[String], ::[FLEncoder[Int], ::[FLEncoder[Boolean], HNil]]]] =
-    fixed((s: String) => s) ::
+  implicit val employeeEncoder: FLEncoder[Employee] =
+    (fixed((s: String) => s) ::
     fixed((s: String) => s) ::
     fixed((s: Int) => s.toString) ::
     fixed((s: Boolean) => s.toString) ::
-      HNil
+      HNil).as[Employee]
+}
 
-//    implicit val a = fixed((s: String) => s)
-//    implicit val b = fixed((s: Int) => s.toString)
-//    implicit val c = fixed((s: Boolean) => s.toString)
+
+trait ListOfEncoder[L <: HList] {
+  type Inside <: HList
+  def merge(l: L): FLEncoder[Inside]
+}
+
+object ListOfEncoder {
+  type Aux[L <: HList, I <: HList] = ListOfEncoder[L] { type Inside = I }
+
+  implicit val hnil: Aux[HNil, HNil] = new ListOfEncoder[HNil] {
+    type Inside = HNil
+    def merge(l: HNil) = FLEncoder.fixed(_ => "")
+  }
+
+  implicit def hcons[H, T <: HList](implicit T: ListOfEncoder[T]): Aux[FLEncoder[H] :: T, H :: T.Inside] = new ListOfEncoder[FLEncoder[H] :: T] {
+    type Inside = H :: T.Inside
+    def merge(l: FLEncoder[H] :: T): FLEncoder[H :: T.Inside] =
+      FLEncoder.fixed((ht: H :: T.Inside) => l.head.encode(ht.head) + T.merge(l.tail).encode(ht.tail))
+  }
 }
 
 object Main extends App {
   val example = Employee("Stefan", "aaa", 10, true)
 
-  import FLEncoder._
-
-  println(encode(example))
+  println(FLEncoder.encode(example))
 
 }
