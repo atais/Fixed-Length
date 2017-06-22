@@ -1,23 +1,26 @@
 package fixedlenght
 
-import shapeless.{::, HList, HNil, ProductTypeClass, ProductTypeClassCompanion}
+import shapeless.{::, Generic, HList, HNil}
 
 trait FLEncoder[A] {
   def encode(obj: A): String
 }
 
-object FLEncoder extends ProductTypeClassCompanion[FLEncoder] {
+object FLEncoder {
+
+  def encode[A](obj: A)(implicit enc: FLEncoder[A]) = enc.encode(obj)
 
   def fixed[A](enc: A => String, length: Int,
                align: Alignment = Alignment.Left, padding: Char = ' '): FLEncoder[A] = {
-
     new FLEncoder[A] {
       override def encode(obj: A): String =
         toFixedLengthString(obj)(enc, length, align, padding)
-
     }
   }
 
+  val hnilCodec = new FLEncoder[HNil] {
+    override def encode(obj: HNil): String = ""
+  }
 
   private def toFixedLengthString[A](obj: A)(enc: (A) => String, length: Int,
                                              align: Alignment, padding: Char) = {
@@ -32,23 +35,23 @@ object FLEncoder extends ProductTypeClassCompanion[FLEncoder] {
     }
   }
 
-  // https://stackoverflow.com/questions/24321482/composing-typeclasses-for-tuples-in-scala
-  // https://www.scala-exercises.org/shapeless/auto_typeclass_derivation
-  override val typeClass: ProductTypeClass[FLEncoder] = new ProductTypeClass[FLEncoder] {
-
-    override def product[H, T <: HList](ch: FLEncoder[H], ct: FLEncoder[T]): FLEncoder[H :: T] = {
-      new FLEncoder[H :: T] {
-        override def encode(obj: H :: T): String = ch.encode(obj.head) + ct.encode(obj.tail)
-      }
-    }
-
-    override def emptyProduct: FLEncoder[HNil] = new FLEncoder[HNil] {
-      override def encode(obj: HNil): String = ""
-    }
-
-    override def project[F, G](instance: => FLEncoder[G], to: (F) => G, from: (G) => F): FLEncoder[F] =
-      new FLEncoder[F] {
-        override def encode(obj: F): String = instance.encode(to(obj))
-      }
+  final implicit class ValueCodecEnrichedWithHListSupport[A](val self: FLEncoder[A]) extends AnyVal {
+    def <<:[B](codecB: FLEncoder[B]): FLEncoder[B :: A :: HNil] =
+      codecB <<: self <<: FLEncoder.hnilCodec
   }
+
+  final implicit class HListCodecEnrichedWithHListSupport[L <: HList](val self: FLEncoder[L]) {
+    def <<:[B](bEncoder: FLEncoder[B]): FLEncoder[B :: L] = new FLEncoder[B :: L] {
+      override def encode(obj: B :: L): String = {
+        bEncoder.encode(obj.head) + self.encode(obj.tail)
+      }
+    }
+  }
+
+  implicit def genToYuple[L <: HList, A](implicit encoder: FLEncoder[L], gen: Generic.Aux[A, L]): FLEncoder[A] = new FLEncoder[A] {
+    override def encode(obj: A): String = encoder.encode(gen.to(obj))
+  }
+
+
 }
+

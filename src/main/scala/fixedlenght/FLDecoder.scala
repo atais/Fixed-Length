@@ -4,7 +4,7 @@ package fixedlenght
   * Created by msiatkowski on 06.06.17.
   */
 trait FLDecoder[A] {
-  def decode(str: String): A
+  def decode(str: String): Either[Throwable, (A, String)]
 }
 
 //  def read(source: String): A = {
