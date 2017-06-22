@@ -9,6 +9,14 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
 
 libraryDependencies += compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+val circeVersion = "0.8.0"
+
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
+
 
 libraryDependencies += "org.scodec" %% "scodec-bits" % "1.1.4"
 libraryDependencies += "org.scodec" %% "scodec-core" % "1.10.3"
