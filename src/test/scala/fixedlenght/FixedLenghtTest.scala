@@ -8,8 +8,8 @@ class FixedLenghtTest extends FlatSpec with Matchers {
   val exampleS = "Stefan     10true "
 
   "An example class" should "be serialized" in {
-//    import Employee._
-//    Parser.decode(exampleS).right shouldEqual exampleC
+    import Employee._
+    Parser.decode[Employee](exampleS).right.get shouldEqual exampleC
   }
 
   it should "get deserialized" in {
@@ -25,6 +25,7 @@ object Employee {
 
   import cats.implicits._
   import shapeless._
+  import read.Read._
 
   implicit val employeeEncoder: Encoder[::[String, ::[Int, ::[Boolean, HNil]]]] = {
     import Encoder.fixed

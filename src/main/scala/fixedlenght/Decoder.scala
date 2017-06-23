@@ -1,6 +1,6 @@
 package fixedlenght
 
-import io.circe
+import read.Read
 import shapeless.{::, Generic, HList, HNil}
 
 
@@ -8,17 +8,17 @@ import shapeless.{::, Generic, HList, HNil}
   * Created by msiatkowski on 06.06.17.
   */
 trait Decoder[A] {
-  def decode(str: String): Either[circe.Error, A]
+  def decode(str: String): Either[Throwable, A]
 }
 
 object Decoder {
 
-  def decode[A](str: String)(implicit dec: Decoder[A]): Either[circe.Error, A] = dec.decode(str)
+  def decode[A](str: String)(implicit dec: Decoder[A]): Either[Throwable, A] = dec.decode(str)
 
   def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' ')
-              (implicit decoder: circe.Decoder[A]): Decoder[A] = {
+              (implicit reader: Read[A]): Decoder[A] = {
     new Decoder[A] {
-      override def decode(str: String): Either[circe.Error, A] = {
+      override def decode(str: String): Either[Throwable, A] = {
         val part = str.substring(start, end)
 
         val stripped = align match {
@@ -26,7 +26,7 @@ object Decoder {
           case Alignment.Right => stripLeading(part, padding)
         }
 
-        circe.parser.decode[A](stripped)(decoder)
+        reader.read(stripped)
       }
 
       private def stripLeading(s: String, c: Char): String = s.replaceFirst(s"""^$c*""", "")
@@ -36,7 +36,7 @@ object Decoder {
   }
 
   val hnilDecoder = new Decoder[HNil] {
-    override def decode(str: String): Either[circe.Error, HNil] = Right(HNil)
+    override def decode(str: String): Either[Throwable, HNil] = Right(HNil)
   }
 
   final implicit class DecoderEnrichedWithHListSupport[A](val self: Decoder[A]) extends AnyVal {
@@ -46,7 +46,7 @@ object Decoder {
 
   final implicit class HListDecoderEnrichedWithHListSupport[L <: HList](val self: Decoder[L]) {
     def <<:[B](bDecoder: Decoder[B]): Decoder[B :: L] = new Decoder[B :: L] {
-      override def decode(str: String): Either[circe.Error, ::[B, L]] = {
+      override def decode(str: String): Either[Throwable, ::[B, L]] = {
         val bd = bDecoder.decode(str)
         val sd = self.decode(str)
 
@@ -59,7 +59,7 @@ object Decoder {
   }
 
   implicit def HListToA[L <: HList, A](implicit decoder: Decoder[L], gen: Generic.Aux[A, L]): Decoder[A] = new Decoder[A] {
-    override def decode(str: String): Either[circe.Error, A] = {
+    override def decode(str: String): Either[Throwable, A] = {
       for {
         d <- decoder.decode(str).right
       } yield gen.from(d)
