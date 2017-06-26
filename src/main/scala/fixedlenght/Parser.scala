@@ -1,7 +1,5 @@
 package fixedlenght
 
-import io.circe
-
 /**
   * Created by msiatkowski on 05.06.17.
   */
