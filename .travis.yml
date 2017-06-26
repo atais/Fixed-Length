@@ -1,0 +1,8 @@
+# See https://github.com/novus/salat/blob/master/.travis.yml
+language: scala
+scala:
+   - 2.10.6
+   - 2.11.8
+   - 2.12.2
+jdk:
+  - oraclejdk8

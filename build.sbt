@@ -1,26 +1,24 @@
 name := "fixed-length"
 
-version := "1.0"
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.2")
 
 scalaVersion := "2.10.6"
 
-libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.2"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
+// dependencies
+lazy val shapeless = "com.chuusai" %% "shapeless" % "2.3.2"
+lazy val shapelessMacros = compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+lazy val cats = "org.typelevel" %% "cats" % "0.9.0"
 
-libraryDependencies += compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
-val circeVersion = "0.8.0"
+// test dependencies
+lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.1"
+lazy val scalacheck = "org.scalacheck" %% "scalacheck" % "1.13.4"
+
 
 libraryDependencies ++= Seq(
-  "io.circe" %% "circe-core",
-  "io.circe" %% "circe-generic",
-  "io.circe" %% "circe-parser"
-).map(_ % circeVersion)
+  shapeless,
+  cats,
+  scalatest % Test,
+  scalacheck % Test
+)
 
-
-libraryDependencies += "org.scodec" %% "scodec-bits" % "1.1.4"
-libraryDependencies += "org.scodec" %% "scodec-core" % "1.10.3"
-libraryDependencies += "org.typelevel" %% "cats" % "0.9.0"
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"
+libraryDependencies ++= (if (scalaBinaryVersion.value startsWith "2.10") Seq(shapelessMacros) else Nil)
