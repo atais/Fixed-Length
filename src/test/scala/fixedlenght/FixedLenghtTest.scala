@@ -27,15 +27,8 @@ object Employee {
   import shapeless._
   import read.Read._
 
-  implicit val employeeEncoder: Encoder[::[String, ::[Int, ::[Boolean, HNil]]]] = {
-    import Encoder.fixed
-    fixed[String](0, 10) <<:
-      fixed[Int](10, 13, Alignment.Right) <<:
-      fixed[Boolean](13, 18)
-  }
-
-  implicit val employeeDecoder: Decoder[::[String, ::[Int, ::[Boolean, HNil]]]] = {
-    import Decoder.fixed
+  implicit val employeeCodec: Codec[::[String, ::[Int, ::[Boolean, HNil]]]] = {
+    import Codec.fixed
     fixed[String](0, 10) <<:
       fixed[Int](10, 13, Alignment.Right) <<:
       fixed[Boolean](13, 18)

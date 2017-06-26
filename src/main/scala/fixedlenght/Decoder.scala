@@ -39,23 +39,20 @@ object Decoder {
     override def decode(str: String): Either[Throwable, HNil] = Right(HNil)
   }
 
-  final implicit class DecoderEnrichedWithHListSupport[A](val self: Decoder[A]) extends AnyVal {
-    def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] =
-      codecB <<: self <<: Decoder.hnilDecoder
-  }
-
   final implicit class HListDecoderEnrichedWithHListSupport[L <: HList](val self: Decoder[L]) {
     def <<:[B](bDecoder: Decoder[B]): Decoder[B :: L] = new Decoder[B :: L] {
       override def decode(str: String): Either[Throwable, ::[B, L]] = {
-        val bd = bDecoder.decode(str)
-        val sd = self.decode(str)
-
         for {
-          a <- bd.right
-          b <- sd.right
+          a <- bDecoder.decode(str).right
+          b <- self.decode(str).right
         } yield a :: b
       }
     }
+  }
+
+  final implicit class DecoderEnrichedWithHListSupport[A](val self: Decoder[A]) extends AnyVal {
+    def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] =
+      codecB <<: self <<: hnilDecoder
   }
 
   implicit def HListToA[L <: HList, A](implicit decoder: Decoder[L], gen: Generic.Aux[A, L]): Decoder[A] = new Decoder[A] {
