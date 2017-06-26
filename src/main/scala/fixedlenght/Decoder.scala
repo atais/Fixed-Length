@@ -7,6 +7,7 @@ import shapeless.{::, Generic, HList, HNil}
 /**
   * Created by msiatkowski on 06.06.17.
   */
+@annotation.implicitNotFound(msg = "Implicit not found for Decoder[${A}]")
 trait Decoder[A] {
   def decode(str: String): Either[Throwable, A]
 }

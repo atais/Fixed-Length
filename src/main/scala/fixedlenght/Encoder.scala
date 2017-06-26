@@ -3,6 +3,7 @@ package fixedlenght
 import cats._
 import shapeless.{::, Generic, HList, HNil}
 
+@annotation.implicitNotFound(msg = "Implicit not found for Encoder[${A}]")
 trait Encoder[A] {
   def encode(obj: A): String
 }
