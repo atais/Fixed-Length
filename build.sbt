@@ -22,3 +22,12 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= (if (scalaBinaryVersion.value startsWith "2.10") Seq(shapelessMacros) else Nil)
+
+// release settings
+releaseCrossBuild := true
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)

@@ -49,14 +49,4 @@ object Codec {
       codecB <<: self <<: hnilCodec
   }
 
-  implicit def HListToA[L <: HList, A](implicit codec: Codec[L], gen: Generic.Aux[A, L]): Codec[A] = new Codec[A] {
-    override def encode(obj: A): String =
-      codec.encode(gen.to(obj))
-
-    override def decode(str: String): Either[Throwable, A] =
-      for {
-        d <- codec.decode(str).right
-      } yield gen.from(d)
-  }
-
 }
