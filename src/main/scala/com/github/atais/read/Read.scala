@@ -1,4 +1,4 @@
-package read
+package com.github.atais.read
 
 /**
   * Created by msiatkowski on 23.06.17.

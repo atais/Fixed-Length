@@ -1,4 +1,4 @@
-package fixedlenght
+package com.github.atais.fixedlenght
 
 
 sealed trait Alignment

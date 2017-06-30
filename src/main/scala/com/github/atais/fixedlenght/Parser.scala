@@ -1,4 +1,4 @@
-package fixedlenght
+package com.github.atais.fixedlenght
 
 /**
   * Created by msiatkowski on 05.06.17.

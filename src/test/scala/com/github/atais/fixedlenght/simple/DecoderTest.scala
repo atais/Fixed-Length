@@ -1,6 +1,6 @@
-package fixedlenght.simple
+package com.github.atais.fixedlenght.simple
 
-import fixedlenght.{Alignment, Decoder, Parser}
+import com.github.atais.fixedlenght.{Alignment, Decoder, Parser}
 import org.scalatest.{FlatSpec, Matchers}
 
 class DecoderTest extends FlatSpec with Matchers {
@@ -11,7 +11,7 @@ class DecoderTest extends FlatSpec with Matchers {
   }
 
   // this will not compile due to lacking Encoder
-  // todo: better compilation error (current: diverging implicit expansion for type fixedlenght.Encoder[fixedlenght.simple.Employee])
+  // todo: better compilation error (current: diverging implicit expansion for type com.github.atais.fixedlenght.Encoder[com.github.atais.fixedlenght.simple.Employee])
   //  it should "not deserialized" in {
   //    import Employee._
   //    Parser.encode(exampleObject) shouldEqual exampleString
@@ -20,7 +20,7 @@ class DecoderTest extends FlatSpec with Matchers {
   object Employee {
 
     import shapeless._
-    import read.implicits._
+    import com.github.atais.read.implicits._
     import Decoder._
 
     implicit val employeeCodec: Decoder[::[String, ::[Int, ::[Boolean, HNil]]]] = {

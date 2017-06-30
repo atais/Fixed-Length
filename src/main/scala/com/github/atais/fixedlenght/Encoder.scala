@@ -1,4 +1,4 @@
-package fixedlenght
+package com.github.atais.fixedlenght
 
 import cats._
 import shapeless.{::, Generic, HList, HNil}

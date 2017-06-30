@@ -1,12 +1,12 @@
-package fixedlenght.simple
+package com.github.atais.fixedlenght.simple
 
-import fixedlenght.{Alignment, Encoder, Parser}
+import com.github.atais.fixedlenght.{Alignment, Encoder, Parser}
 import org.scalatest.{FlatSpec, Matchers}
 
 class EncoderTest extends FlatSpec with Matchers {
 
   // this will not compile due to lacking Decoder
-  // todo: better compilation error (current: diverging implicit expansion for type fixedlenght.Decoder[fixedlenght.simple.Employee])
+  // todo: better compilation error (current: diverging implicit expansion for type com.github.atais.fixedlenght.Decoder[com.github.atais.fixedlenght.simple.Employee])
   //  "An example class" should "be serialized" in {
   //    import Employee._
   //    Parser.decode[Employee](exampleString).right.get shouldEqual exampleObject

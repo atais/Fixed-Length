@@ -1,6 +1,6 @@
-package read
+package com.github.atais.read
 
-import read.Read.read
+import com.github.atais.read.Read.read
 
 /**
   * Created by michalsiatkowski on 26.06.2017.

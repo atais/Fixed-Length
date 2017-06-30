@@ -1,6 +1,6 @@
-package fixedlenght.simple
+package com.github.atais.fixedlenght.simple
 
-import fixedlenght.{Alignment, Codec, Parser}
+import com.github.atais.fixedlenght.{Alignment, Codec, Parser}
 import org.scalatest.{FlatSpec, Matchers}
 
 class CodecTest extends FlatSpec with Matchers {
@@ -19,7 +19,7 @@ class CodecTest extends FlatSpec with Matchers {
 
     import shapeless._
     import cats.implicits._
-    import read.implicits._
+    import com.github.atais.read.implicits._
     import Codec._
 
     implicit val employeeCodec: Codec[::[String, ::[Int, ::[Boolean, HNil]]]] = {
