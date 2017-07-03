@@ -1,4 +1,4 @@
-# fixed-length [![Build Status](https://travis-ci.org/atais/Fixed-Length.svg?branch=master)](https://travis-ci.org/atais/Fixed-Length) [![codecov](https://codecov.io/gh/atais/Fixed-Length/branch/master/graph/badge.svg)](https://codecov.io/gh/atais/Fixed-Length) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)]()
+# fixed-length [![Build Status](https://travis-ci.org/atais/Fixed-Length.svg?branch=master)](https://travis-ci.org/atais/Fixed-Length) [![codecov](https://codecov.io/gh/atais/Fixed-Length/branch/master/graph/badge.svg)](https://codecov.io/gh/atais/Fixed-Length) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat)](https://github.com/atais/Fixed-Length/blob/master/LICENSE)
 
 A simple Scala library for parsing fixed-length format.
 

@@ -1,3 +1,5 @@
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
 // main dependencies
 lazy val shapeless = "com.chuusai" %% "shapeless" % "2.3.2"
 lazy val shapelessMacros = compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
@@ -31,6 +33,21 @@ lazy val main = (project in file("."))
         Opts.resolver.sonatypeSnapshots
       else
         Opts.resolver.sonatypeStaging
+    ),
+
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      ReleaseStep(action = Command.process("publishSigned", _), enableCrossBuild = true),
+      setNextVersion,
+      commitNextVersion,
+      ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
+      pushChanges
     )
   )
 
