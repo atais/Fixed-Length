@@ -1,4 +1,4 @@
-package com.github.atais.fixedlenght
+package com.github.atais.fixedlength
 
 import cats.Show
 import com.github.atais.read.Read

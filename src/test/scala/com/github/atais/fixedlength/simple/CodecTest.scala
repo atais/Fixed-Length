@@ -1,6 +1,6 @@
-package com.github.atais.fixedlenght.simple
+package com.github.atais.fixedlength.simple
 
-import com.github.atais.fixedlenght.{Alignment, Codec, Parser}
+import com.github.atais.fixedlength.{Alignment, Codec, Parser}
 import org.scalatest.{FlatSpec, Matchers}
 
 class CodecTest extends FlatSpec with Matchers {

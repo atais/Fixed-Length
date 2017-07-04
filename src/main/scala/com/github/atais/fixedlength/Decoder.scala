@@ -1,4 +1,4 @@
-package com.github.atais.fixedlenght
+package com.github.atais.fixedlength
 
 import com.github.atais.read.Read
 import shapeless.{::, Generic, HList, HNil}
