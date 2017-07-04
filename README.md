@@ -6,15 +6,23 @@ A graceful playground for Shapeless and Cats libraries.
 
 ## Installation
 
-Comming soon...
+You can find the `fixed-length` library on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.atais%22%20AND%20%22fixed-length%22)
+
+Add the library to your dependencies:
+
+```
+libraryDependencies += "com.github.atais" %% "fixed-length" % "0.1"
+```
+
+Library is cross-compiled for `Scala 2.10`, `2.11` and `2.12`.
 
 ## Examples
 
 Please find example test scenarios describing simple use cases:
 
-* [EncoderTest](https://github.com/atais/Fixed-Length/blob/master/src/test/scala/fixedlenght/simple/EncoderTest.scala)
-* [DecoderTest](https://github.com/atais/Fixed-Length/blob/master/src/test/scala/fixedlenght/simple/DecoderTest.scala)
-* [CodecTest](https://github.com/atais/Fixed-Length/blob/master/src/test/scala/fixedlenght/simple/CodecTest.scala)
+* [EncoderTest](https://github.com/atais/Fixed-Length/blob/master/src/test/scala/com/github/atais/fixedlength/simple/EncoderTest.scala)
+* [DecoderTest](https://github.com/atais/Fixed-Length/blob/master/src/test/scala/com/github/atais/fixedlength/simple/DecoderTest.scala)
+* [CodecTest](https://github.com/atais/Fixed-Length/blob/master/src/test/scala/com/github/atais/fixedlength/simple/CodecTest.scala)
 
 ## Usage
 

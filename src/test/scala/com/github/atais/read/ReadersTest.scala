@@ -1,4 +1,4 @@
-package read
+package com.github.atais.read
 
 import com.github.atais.read.implicits._
 import org.scalatest.prop.PropertyChecks
