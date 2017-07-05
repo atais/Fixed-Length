@@ -1,12 +1,9 @@
 package com.github.atais.read
 
-import com.github.atais.read.implicits._
+import com.github.atais.util.Read._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 
-/**
-  * Created by msiatkowski on 04.07.17.
-  */
 class ReadersTest extends FlatSpec with Matchers with PropertyChecks {
 
   implicit val generatorDrivenConf = PropertyCheckConfiguration(minSuccessful = 5000)

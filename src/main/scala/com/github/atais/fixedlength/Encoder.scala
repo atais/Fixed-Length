@@ -1,6 +1,6 @@
 package com.github.atais.fixedlength
 
-import cats._
+import com.github.atais.util.Write
 import shapeless.{::, Generic, HList, HNil}
 
 @annotation.implicitNotFound(msg = "Implicit not found for Encoder[${A}]")
@@ -13,10 +13,10 @@ object Encoder {
   def encode[A](obj: A)(implicit enc: Encoder[A]): String = enc.encode(obj)
 
   def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' ')
-              (implicit show: Show[A]): Encoder[A] = {
+              (implicit write: Write[A]): Encoder[A] = {
     new Encoder[A] {
       override def encode(obj: A): String = {
-        val value = show.show(obj)
+        val value = write.write(obj)
 
         val paddingSpace = (end - start) - value.length
         val filler = padding.toString * paddingSpace

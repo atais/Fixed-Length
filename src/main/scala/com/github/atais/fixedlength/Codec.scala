@@ -1,25 +1,20 @@
 package com.github.atais.fixedlength
 
-import cats.Show
-import com.github.atais.read.Read
+import com.github.atais.util.{Read, Write}
 import shapeless.{::, HList, HNil}
 
-/**
-  * Created by michalsiatkowski on 26.06.2017.
-  */
 trait Codec[A] extends Encoder[A] with Decoder[A] with Serializable
 
 object Codec {
 
-  def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' ')
-              (implicit reader: Read[A], show: Show[A]): Codec[A] = {
+  def fixed[A: Read : Write](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' '): Codec[A] = {
 
     new Codec[A] {
       override def decode(str: String): Either[Throwable, A] =
-        Decoder.decode(str)(Decoder.fixed[A](start, end, align, padding)(reader))
+        Decoder.decode(str)(Decoder.fixed[A](start, end, align, padding))
 
       override def encode(obj: A): String =
-        Encoder.encode(obj)(Encoder.fixed[A](start, end, align, padding)(show))
+        Encoder.encode(obj)(Encoder.fixed[A](start, end, align, padding))
     }
   }
 

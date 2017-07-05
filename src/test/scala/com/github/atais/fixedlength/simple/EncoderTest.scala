@@ -21,11 +21,12 @@ class EncoderTest extends FlatSpec with Matchers {
 
     import shapeless._
     import cats.implicits._
+    import com.github.atais.util.Write._
     import Encoder._
 
-    implicit val employeeCodec: Encoder[::[String, ::[Int, ::[Boolean, HNil]]]] = {
+    implicit val employeeCodec: Encoder[::[String, ::[Option[Int], ::[Boolean, HNil]]]] = {
       fixed[String](0, 10) <<:
-        fixed[Int](10, 13, Alignment.Right) <<:
+        fixed[Option[Int]](10, 13, Alignment.Right) <<:
         fixed[Boolean](13, 18)
     }
   }
