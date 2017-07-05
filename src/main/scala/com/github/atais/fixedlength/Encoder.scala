@@ -4,7 +4,7 @@ import cats._
 import shapeless.{::, Generic, HList, HNil}
 
 @annotation.implicitNotFound(msg = "Implicit not found for Encoder[${A}]")
-trait Encoder[A] {
+trait Encoder[A] extends Serializable {
   def encode(obj: A): String
 }
 
@@ -33,10 +33,10 @@ object Encoder {
     override def encode(obj: HNil): String = ""
   }
 
-  final implicit class HListEncoderEnrichedWithHListSupport[L <: HList](val self: Encoder[L]) {
+  final implicit class HListEncoderEnrichedWithHListSupport[L <: HList](val self: Encoder[L]) extends Serializable {
     def <<:[B](bEncoder: Encoder[B]): Encoder[B :: L] = new Encoder[B :: L] {
       override def encode(obj: B :: L): String =
-      bEncoder.encode(obj.head) + self.encode(obj.tail)
+        bEncoder.encode(obj.head) + self.encode(obj.tail)
     }
   }
 

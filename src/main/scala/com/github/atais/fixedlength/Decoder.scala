@@ -8,7 +8,7 @@ import shapeless.{::, Generic, HList, HNil}
   * Created by msiatkowski on 06.06.17.
   */
 @annotation.implicitNotFound(msg = "Implicit not found for Decoder[${A}]")
-trait Decoder[A] {
+trait Decoder[A] extends Serializable {
   def decode(str: String): Either[Throwable, A]
 }
 
@@ -27,7 +27,10 @@ object Decoder {
           case Alignment.Right => stripLeading(part, padding)
         }
 
-        reader.read(stripped)
+        reader.read(stripped) match {
+          case Right(p) => Right(p)
+          case Left(e) => Left(new Throwable(s"Failed parsing [$part], described with [$start, $end, $align, $padding]. Error: ${e.getMessage}"))
+        }
       }
 
       private def stripLeading(s: String, c: Char): String = s.replaceFirst(s"""^$c*""", "")
@@ -40,7 +43,7 @@ object Decoder {
     override def decode(str: String): Either[Throwable, HNil] = Right(HNil)
   }
 
-  final implicit class HListDecoderEnrichedWithHListSupport[L <: HList](val self: Decoder[L]) {
+  final implicit class HListDecoderEnrichedWithHListSupport[L <: HList](val self: Decoder[L]) extends Serializable {
     def <<:[B](bDecoder: Decoder[B]): Decoder[B :: L] = new Decoder[B :: L] {
       override def decode(str: String): Either[Throwable, ::[B, L]] = {
         for {

@@ -3,7 +3,7 @@ package com.github.atais.read
 /**
   * Created by msiatkowski on 23.06.17.
   */
-trait Read[A] {
+trait Read[A] extends Serializable {
   def read(str: String): Either[Throwable, A]
 }
 

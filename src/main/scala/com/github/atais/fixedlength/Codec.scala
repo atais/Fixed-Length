@@ -2,12 +2,12 @@ package com.github.atais.fixedlength
 
 import cats.Show
 import com.github.atais.read.Read
-import shapeless.{::, Generic, HList, HNil}
+import shapeless.{::, HList, HNil}
 
 /**
   * Created by michalsiatkowski on 26.06.2017.
   */
-trait Codec[A] extends Encoder[A] with Decoder[A]
+trait Codec[A] extends Encoder[A] with Decoder[A] with Serializable
 
 object Codec {
 
@@ -29,7 +29,7 @@ object Codec {
     override def encode(obj: HNil): String = Encoder.hnilEncoder.encode(obj)
   }
 
-  final implicit class HListCodecEnrichedWithHListSupport[L <: HList](val self: Codec[L]) {
+  final implicit class HListCodecEnrichedWithHListSupport[L <: HList](val self: Codec[L]) extends Serializable {
     def <<:[B](bCodec: Codec[B]): Codec[B :: L] = new Codec[B :: L] {
 
       override def decode(str: String): Either[Throwable, ::[B, L]] = {
