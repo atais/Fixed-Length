@@ -13,11 +13,11 @@ class MultipleCodecTest extends FlatSpec with Matchers {
     import com.github.atais.util.Read._
     import com.github.atais.util.Write._
 
-    implicit val example1 = {
+    implicit val example1: Codec[Example1] = {
       fixed[String](0, 1) <<:
         fixed[String](1, 2) <<:
         fixed[String](2, 3)
-    }
+    }.as[Example1]
   }
 
   case class Example2(a: String, b: String, c: String, d: String)
@@ -29,12 +29,12 @@ class MultipleCodecTest extends FlatSpec with Matchers {
     import com.github.atais.util.Read._
     import com.github.atais.util.Write._
 
-    implicit val example2 = {
+    implicit val example2: Codec[Example2] = {
       fixed[String](0, 1) <<:
         fixed[String](1, 2) <<:
         fixed[String](2, 3) <<:
         fixed[String](3, 4)
-    }
+    }.as[Example2]
   }
 
 
@@ -47,19 +47,12 @@ class MultipleCodecTest extends FlatSpec with Matchers {
     val ex2S = "abcd"
 
     // implicits should be working here
-        import Example1._
-        import Example2._
-    {
-      // separately they work
-//      import Example1._
-      Parser.decode[Example1](ex1S).right.get shouldEqual ex1
-      Parser.encode[Example1](ex1) shouldEqual ex1S
-    }
-    {
-//      import Example2._
-      Parser.decode[Example2](ex2S).right.get shouldEqual ex2
-      Parser.encode[Example2](ex2) shouldEqual ex2S
-    }
+    import Example1._
+    import Example2._
+    Parser.decode[Example1](ex1S).right.get shouldEqual ex1
+    Parser.encode[Example1](ex1) shouldEqual ex1S
+    Parser.decode[Example2](ex2S).right.get shouldEqual ex2
+    Parser.encode[Example2](ex2) shouldEqual ex2S
   }
 
 
