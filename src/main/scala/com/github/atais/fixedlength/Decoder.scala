@@ -64,12 +64,4 @@ object Decoder {
       codecB <<: self <<: hnilDecoder
   }
 
-  implicit def HListToA[L <: HList, A](implicit decoder: Decoder[L], gen: Generic.Aux[A, L]): Decoder[A] = new Decoder[A] {
-    override def decode(str: String): Either[Throwable, A] = {
-      for {
-        d <- decoder.decode(str).right
-      } yield gen.from(d)
-    }
-  }
-
 }
