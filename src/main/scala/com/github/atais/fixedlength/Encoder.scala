@@ -38,16 +38,15 @@ object Encoder {
       override def encode(obj: B :: L): String =
         bEncoder.encode(obj.head) + self.encode(obj.tail)
     }
+
+    def as[B](implicit gen: Generic.Aux[B, L]): Encoder[B] = new Encoder[B] {
+      override def encode(obj: B): String = self.encode(gen.to(obj))
+    }
   }
 
   final implicit class EncoderEnrichedWithHListSupport[A](val self: Encoder[A]) extends AnyVal {
     def <<:[B](codecB: Encoder[B]): Encoder[B :: A :: HNil] =
       codecB <<: self <<: hnilEncoder
-  }
-
-  implicit def HListToA[L <: HList, A](implicit encoder: Encoder[L], gen: Generic.Aux[A, L]): Encoder[A] = new Encoder[A] {
-    override def encode(obj: A): String =
-      encoder.encode(gen.to(obj))
   }
 
 }

@@ -49,19 +49,19 @@ object Decoder {
         } yield a :: b
       }
     }
+
+    def as[B](implicit gen: Generic.Aux[B, L]): Decoder[B] = new Decoder[B] {
+      override def decode(str: String): Either[Throwable, B] = {
+        for {
+          d <- self.decode(str).right
+        } yield gen.from(d)
+      }
+    }
   }
 
   final implicit class DecoderEnrichedWithHListSupport[A](val self: Decoder[A]) extends AnyVal {
     def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] =
       codecB <<: self <<: hnilDecoder
-  }
-
-  implicit def HListToA[L <: HList, A](implicit decoder: Decoder[L], gen: Generic.Aux[A, L]): Decoder[A] = new Decoder[A] {
-    override def decode(str: String): Either[Throwable, A] = {
-      for {
-        d <- decoder.decode(str).right
-      } yield gen.from(d)
-    }
   }
 
 }

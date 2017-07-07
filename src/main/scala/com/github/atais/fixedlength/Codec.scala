@@ -1,7 +1,7 @@
 package com.github.atais.fixedlength
 
 import com.github.atais.util.{Read, Write}
-import shapeless.{::, HList, HNil}
+import shapeless.{::, Generic, HList, HNil}
 
 trait Codec[A] extends Encoder[A] with Decoder[A] with Serializable
 
@@ -36,6 +36,16 @@ object Codec {
 
       override def encode(obj: ::[B, L]): String =
         bCodec.encode(obj.head) + self.encode(obj.tail)
+    }
+
+    def as[B](implicit gen: Generic.Aux[B, L]): Codec[B] = new Codec[B] {
+      override def decode(str: String): Either[Throwable, B] = {
+        for {
+          d <- self.decode(str).right
+        } yield gen.from(d)
+      }
+
+      override def encode(obj: B): String = self.encode(gen.to(obj))
     }
   }
 
