@@ -19,15 +19,14 @@ class DecoderTest extends FlatSpec with Matchers {
 
   object Employee {
 
-    import shapeless._
     import com.github.atais.util.Read._
     import Decoder._
 
-    implicit val employeeCodec: Decoder[::[String, ::[Option[Int], ::[Boolean, HNil]]]] = {
+    implicit val employeeCodec: Decoder[Employee] = {
       fixed[String](0, 10) <<:
         fixed[Option[Int]](10, 13, Alignment.Right) <<:
         fixed[Boolean](13, 18)
-    }
+    }.as[Employee]
   }
 
 }

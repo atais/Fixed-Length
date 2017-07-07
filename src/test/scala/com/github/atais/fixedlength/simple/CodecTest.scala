@@ -17,17 +17,16 @@ class CodecTest extends FlatSpec with Matchers {
 
   object Employee {
 
-    import shapeless._
     import com.github.atais.util.Read._
     import cats.implicits._
     import com.github.atais.util.Write._
     import Codec._
 
-    implicit val employeeCodec: Codec[::[String, ::[Option[Int], ::[Boolean, HNil]]]] = {
+    implicit val employeeCodec: Codec[Employee] = {
       fixed[String](0, 10) <<:
         fixed[Option[Int]](10, 13, Alignment.Right) <<:
         fixed[Boolean](13, 18)
-    }
+    }.as[Employee]
   }
 
 }
