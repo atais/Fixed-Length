@@ -3,14 +3,14 @@ package com.github.atais.fixedlength
 import com.github.atais.util.Read
 import shapeless.{::, Generic, HList, HNil}
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 
 @annotation.implicitNotFound(msg = "Implicit not found for Decoder[${A}]")
 trait Decoder[A] extends Serializable {
   def decode(str: String): Either[Throwable, A]
 
-  protected def extraCharsAfterEnd(source: String): Option[String] = None
+  protected[fixedlength] def extraCharsAfterEnd(source: String): Option[String] = None
 }
 
 object Decoder {
@@ -34,7 +34,12 @@ object Decoder {
         }
       }
 
-      override protected def extraCharsAfterEnd(source: String): Option[String] = Try(source.substring(end)).toOption
+      override protected[fixedlength] def extraCharsAfterEnd(source: String): Option[String] = {
+        Try(source.substring(end)) match {
+          case Success(s) => if (s.length == 0) None else Some(s)
+          case Failure(_) => None
+        }
+      }
 
       private def stripLeading(s: String, c: Char): String = s.replaceFirst(s"""^$c*""", "")
 
@@ -72,7 +77,7 @@ object Decoder {
         override def decode(str: String): Either[Throwable, A] = {
           self.extraCharsAfterEnd(str) match {
             case None => self.decode(str)
-            case Some(extra) => Left(new Throwable(s"Input line [$str] is longer than expected, we would skip [$extra]"))
+            case Some(extra) => Left(new LineLongerThanExpectedException(str, extra))
           }
         }
       }

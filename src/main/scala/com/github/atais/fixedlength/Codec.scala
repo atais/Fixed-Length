@@ -49,9 +49,22 @@ object Codec {
     }
   }
 
-  final implicit class CodecEnrichedWithHListSupport[A](val self: Codec[A]) extends AnyVal {
-    def <<:[B](codecB: Codec[B]): Codec[B :: A :: HNil] =
-      codecB <<: self <<: hnilCodec
+  final implicit class CodecEnrichedWithHListSupport[A](val self: Codec[A]) extends Serializable {
+    def <<:[B](codecB: Codec[B]): Codec[B :: A :: HNil] = {
+
+      val lastCodec = new Codec[A] {
+        override def decode(str: String): Either[Throwable, A] = {
+          self.extraCharsAfterEnd(str) match {
+            case None => self.decode(str)
+            case Some(extra) => Left(new LineLongerThanExpectedException(str, extra))
+          }
+        }
+
+        override def encode(obj: A): String = self.encode(obj)
+      }
+
+      codecB <<: lastCodec <<: hnilCodec
+    }
   }
 
 }
