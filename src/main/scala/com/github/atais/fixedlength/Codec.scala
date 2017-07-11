@@ -27,25 +27,19 @@ object Codec {
   final implicit class HListCodecEnrichedWithHListSupport[L <: HList](val self: Codec[L]) extends Serializable {
     def <<:[B](bCodec: Codec[B]): Codec[B :: L] = new Codec[B :: L] {
 
-      override def decode(str: String): Either[Throwable, ::[B, L]] = {
-        for {
-          a <- bCodec.decode(str).right
-          b <- self.decode(str).right
-        } yield a :: b
-      }
+      override def decode(str: String): Either[Throwable, ::[B, L]] =
+        Decoder.merge(self, bCodec, str)
 
       override def encode(obj: ::[B, L]): String =
-        bCodec.encode(obj.head) + self.encode(obj.tail)
+        Encoder.merge(self, bCodec, obj)
     }
 
     def as[B](implicit gen: Generic.Aux[B, L]): Codec[B] = new Codec[B] {
-      override def decode(str: String): Either[Throwable, B] = {
-        for {
-          d <- self.decode(str).right
-        } yield gen.from(d)
-      }
+      override def decode(str: String): Either[Throwable, B] =
+        Decoder.transform(self, str)
 
-      override def encode(obj: B): String = self.encode(gen.to(obj))
+      override def encode(obj: B): String =
+        Encoder.transform(self, obj)
     }
   }
 
@@ -53,12 +47,8 @@ object Codec {
     def <<:[B](codecB: Codec[B]): Codec[B :: A :: HNil] = {
 
       val lastCodec = new Codec[A] {
-        override def decode(str: String): Either[Throwable, A] = {
-          self.extraCharsAfterEnd(str) match {
-            case None => self.decode(str)
-            case Some(extra) => Left(new LineLongerThanExpectedException(str, extra))
-          }
-        }
+        override def decode(str: String): Either[Throwable, A] =
+          Decoder.decodeLast(self, str)
 
         override def encode(obj: A): String = self.encode(obj)
       }

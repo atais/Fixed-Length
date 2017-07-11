@@ -51,22 +51,38 @@ object Decoder {
     override def decode(str: String): Either[Throwable, HNil] = Right(HNil)
   }
 
+  protected[fixedlength] def merge[A <: HList, B](decoderA: Decoder[A],
+                                                  decoderB: Decoder[B],
+                                                  str: String): Either[Throwable, ::[B, A]] = {
+    for {
+      a <- decoderB.decode(str).right
+      b <- decoderA.decode(str).right
+    } yield a :: b
+  }
+
+  protected[fixedlength] def transform[A, B](decoderA: Decoder[A], str: String)
+                                            (implicit gen: Generic.Aux[B, A]): Either[Throwable, B] = {
+    for {
+      d <- decoderA.decode(str).right
+    } yield gen.from(d)
+  }
+
+  protected[fixedlength] def decodeLast[A](decoderA: Decoder[A], str: String): Either[Throwable, A] = {
+    decoderA.extraCharsAfterEnd(str) match {
+      case None => decoderA.decode(str)
+      case Some(extra) => Left(new LineLongerThanExpectedException(str, extra))
+    }
+  }
+
   final implicit class HListDecoderEnrichedWithHListSupport[L <: HList](val self: Decoder[L]) extends Serializable {
-    def <<:[B](bDecoder: Decoder[B]): Decoder[B :: L] = new Decoder[B :: L] {
-      override def decode(str: String): Either[Throwable, ::[B, L]] = {
-        for {
-          a <- bDecoder.decode(str).right
-          b <- self.decode(str).right
-        } yield a :: b
-      }
+    def <<:[B](decoderB: Decoder[B]): Decoder[B :: L] = new Decoder[::[B, L]] {
+      override def decode(str: String): Either[Throwable, ::[B, L]] =
+        merge(self, decoderB, str)
     }
 
     def as[B](implicit gen: Generic.Aux[B, L]): Decoder[B] = new Decoder[B] {
-      override def decode(str: String): Either[Throwable, B] = {
-        for {
-          d <- self.decode(str).right
-        } yield gen.from(d)
-      }
+      override def decode(str: String): Either[Throwable, B] =
+        transform(self, str)
     }
   }
 
@@ -74,12 +90,8 @@ object Decoder {
     def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] = {
 
       val lastDecoder = new Decoder[A] {
-        override def decode(str: String): Either[Throwable, A] = {
-          self.extraCharsAfterEnd(str) match {
-            case None => self.decode(str)
-            case Some(extra) => Left(new LineLongerThanExpectedException(str, extra))
-          }
-        }
+        override def decode(str: String): Either[Throwable, A] =
+          decodeLast(self, str)
       }
 
       codecB <<: lastDecoder <<: hnilDecoder
