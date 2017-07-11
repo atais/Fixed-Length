@@ -3,10 +3,14 @@ package com.github.atais.fixedlength
 import com.github.atais.util.Read
 import shapeless.{::, Generic, HList, HNil}
 
+import scala.util.Try
+
 
 @annotation.implicitNotFound(msg = "Implicit not found for Decoder[${A}]")
 trait Decoder[A] extends Serializable {
   def decode(str: String): Either[Throwable, A]
+
+  protected def extraCharsAfterEnd(source: String): Option[String] = None
 }
 
 object Decoder {
@@ -29,6 +33,8 @@ object Decoder {
           case Left(e) => Left(new Throwable(s"Failed parsing [$part], described with [$start, $end, $align, $padding]. Error: ${e.getMessage}"))
         }
       }
+
+      override protected def extraCharsAfterEnd(source: String): Option[String] = Try(source.substring(end)).toOption
 
       private def stripLeading(s: String, c: Char): String = s.replaceFirst(s"""^$c*""", "")
 
@@ -59,9 +65,20 @@ object Decoder {
     }
   }
 
-  final implicit class DecoderEnrichedWithHListSupport[A](val self: Decoder[A]) extends AnyVal {
-    def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] =
-      codecB <<: self <<: hnilDecoder
+  final implicit class DecoderEnrichedWithHListSupport[A](val self: Decoder[A]) extends Serializable {
+    def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] = {
+
+      val lastDecoder = new Decoder[A] {
+        override def decode(str: String): Either[Throwable, A] = {
+          self.extraCharsAfterEnd(str) match {
+            case None => self.decode(str)
+            case Some(extra) => Left(new Throwable(s"Input line [$str] is longer than expected, we would skip [$extra]"))
+          }
+        }
+      }
+
+      codecB <<: lastDecoder <<: hnilDecoder
+    }
   }
 
 }

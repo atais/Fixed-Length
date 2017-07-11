@@ -5,12 +5,14 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class CodecTest extends FlatSpec with Matchers {
 
-  "An example class" should "be serialized" in {
+  behavior of "Codec"
+
+  it should "decode example object properly" in {
     import Employee._
     Parser.decode[Employee](exampleString).right.get shouldEqual exampleObject
   }
 
-  it should "get deserialized" in {
+  it should "encode example object properly" in {
     import Employee._
     Parser.encode(exampleObject) shouldEqual exampleString
   }
