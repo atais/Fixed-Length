@@ -17,20 +17,32 @@ object Decoder {
 
   def decode[A](str: String)(implicit dec: Decoder[A]): Either[Throwable, A] = dec.decode(str)
 
-  def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' ')
+  def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left,
+               padding: Char = ' ', defaultValue: A = null.asInstanceOf[A])
               (implicit reader: Read[A]): Decoder[A] = {
     new Decoder[A] {
       override def decode(str: String): Either[Throwable, A] = {
-        val part = str.substring(start, end)
 
-        val stripped = align match {
-          case Alignment.Left => stripTrailing(part, padding)
-          case Alignment.Right => stripLeading(part, padding)
+        def tryUsingDefaultValue(error: => Throwable) = {
+          Option(defaultValue) match {
+            case Some(v) => Right(v)
+            case None => Left(error)
+          }
         }
 
-        reader.read(stripped) match {
-          case Right(p) => Right(p)
-          case Left(e) => Left(new Throwable(s"Failed parsing [$part], described with [$start, $end, $align, $padding]. Error: ${e.getMessage}"))
+        Try(str.substring(start, end)) match {
+          case Success(part) =>
+            val stripped = align match {
+              case Alignment.Left => stripTrailing(part, padding)
+              case Alignment.Right => stripLeading(part, padding)
+            }
+
+            reader.read(stripped) match {
+              case Right(p) => Right(p)
+              case Left(e) => tryUsingDefaultValue(new ParsingFailedException(part, start, end, align, padding, e))
+            }
+          case Failure(e) =>
+            tryUsingDefaultValue(e)
         }
       }
 

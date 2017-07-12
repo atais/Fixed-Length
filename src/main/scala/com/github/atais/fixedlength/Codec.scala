@@ -7,11 +7,12 @@ trait Codec[A] extends Encoder[A] with Decoder[A] with Serializable
 
 object Codec {
 
-  def fixed[A: Read : Write](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' '): Codec[A] = {
+  def fixed[A: Read : Write](start: Int, end: Int, align: Alignment = Alignment.Left,
+                             padding: Char = ' ', defaultValue: A = null.asInstanceOf[A]): Codec[A] = {
 
     new Codec[A] {
       override def decode(str: String): Either[Throwable, A] =
-        Decoder.decode(str)(Decoder.fixed[A](start, end, align, padding))
+        Decoder.decode(str)(Decoder.fixed[A](start, end, align, padding, defaultValue))
 
       override def encode(obj: A): String =
         Encoder.encode(obj)(Encoder.fixed[A](start, end, align, padding))

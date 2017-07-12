@@ -25,7 +25,8 @@ class TooLongLineTest extends FlatSpec with Matchers {
 
     val exampleString = "abcd"
     val decoded = Parser.decode[Example](exampleString)
-    decoded.left.get.getMessage should include(exampleString)
+
+    decoded.left.get shouldBe a[LineLongerThanExpectedException]
     decoded.right.toOption shouldEqual None
   }
 
