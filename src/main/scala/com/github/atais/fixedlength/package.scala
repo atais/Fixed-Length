@@ -14,7 +14,7 @@ package object fixedlength {
                                align: Alignment, padding: Char,
                                parentError: Throwable) extends Throwable {
     override def getMessage: String =
-      s"Failed parsing [$part], described with [$start, $end, $align, $padding]. " +
+      s"Failed parsing [$part], described with [$start, $end, $align, '$padding']. " +
       s"Error: ${parentError.getMessage}"
   }
 

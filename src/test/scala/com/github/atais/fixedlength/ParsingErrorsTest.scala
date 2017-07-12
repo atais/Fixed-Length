@@ -37,6 +37,18 @@ class ParsingErrorsTest extends FlatSpec with Matchers {
     val decoded = Parser.decode[Example](exampleString)
 
     decoded.left.get shouldBe a[ParsingFailedException]
+    decoded.left.get.getMessage should include("-")
+    decoded.right.toOption shouldEqual None
+  }
+
+  it should "return an LineLongerThanExpectedException error if input line is longer than expected" in {
+    import Example._
+
+    val exampleString = "1234"
+    val decoded = Parser.decode[Example](exampleString)
+
+    decoded.left.get shouldBe a[LineLongerThanExpectedException]
+    decoded.left.get.getMessage should include(exampleString)
     decoded.right.toOption shouldEqual None
   }
 
