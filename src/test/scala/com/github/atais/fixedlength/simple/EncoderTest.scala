@@ -5,6 +5,8 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class EncoderTest extends FlatSpec with Matchers {
 
+  behavior of "Encoder"
+
   // this will not compile due to lacking Decoder
   // todo: better compilation error (current: diverging implicit expansion for type com.github.atais.fixedlenght.Decoder[com.github.atais.fixedlenght.simple.Employee])
   //  "An example class" should "be serialized" in {
@@ -12,7 +14,7 @@ class EncoderTest extends FlatSpec with Matchers {
   //    Parser.decode[Employee](exampleString).right.get shouldEqual exampleObject
   //  }
 
-  it should "get deserialized" in {
+  it should "encode example object properly" in {
     import Employee._
     Parser.encode(exampleObject) shouldEqual exampleString
   }

@@ -17,7 +17,7 @@ object Write {
   // --------------------
   // implicits
 
-  implicit def writePrimitive[A : Show](implicit s: Show[A]): Write[A] = create[A] {
+  implicit def writePrimitive[A](implicit s: Show[A]): Write[A] = create[A] {
     o =>
       s.show(o)
   }

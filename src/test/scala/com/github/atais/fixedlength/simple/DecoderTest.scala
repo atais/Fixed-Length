@@ -5,7 +5,9 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class DecoderTest extends FlatSpec with Matchers {
 
-  "An example class" should "be serialized" in {
+  behavior of "Decoder"
+
+  it should "decode example object properly" in {
     import Employee._
     Parser.decode[Employee](exampleString).right.get shouldEqual exampleObject
   }

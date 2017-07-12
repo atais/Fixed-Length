@@ -33,14 +33,25 @@ object Encoder {
     override def encode(obj: HNil): String = ""
   }
 
+  protected[fixedlength] def merge[A <: HList, B](encoderA: Encoder[A],
+                                                  encoderB: Encoder[B],
+                                                  obj: B :: A): String = {
+    encoderB.encode(obj.head) + encoderA.encode(obj.tail)
+  }
+
+  protected[fixedlength] def transform[A, B](encoderA: Encoder[A], obj: B)
+                                            (implicit gen: Generic.Aux[B, A]): String = {
+    encoderA.encode(gen.to(obj))
+  }
+
   final implicit class HListEncoderEnrichedWithHListSupport[L <: HList](val self: Encoder[L]) extends Serializable {
-    def <<:[B](bEncoder: Encoder[B]): Encoder[B :: L] = new Encoder[B :: L] {
+    def <<:[B](encoderB: Encoder[B]): Encoder[B :: L] = new Encoder[B :: L] {
       override def encode(obj: B :: L): String =
-        bEncoder.encode(obj.head) + self.encode(obj.tail)
+        merge(self, encoderB, obj)
     }
 
     def as[B](implicit gen: Generic.Aux[B, L]): Encoder[B] = new Encoder[B] {
-      override def encode(obj: B): String = self.encode(gen.to(obj))
+      override def encode(obj: B): String = transform(self, obj)
     }
   }
 
