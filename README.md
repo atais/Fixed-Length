@@ -54,5 +54,12 @@ Fills the remaining space in the given area with the padding Char.
 **Warning!** 
 Wrong selection of padding char may cause decoding issues! 
 
+### defaultValue: A (Decoder only)
+*(default value is `null`)*
+
+The default value of a field, which will be used in case of any decoding error. 
+
+**Warning!** 
+This will surpress any decoding errors!
 
 ## [License](https://github.com/atais/Fixed-Length/blob/master/LICENSE)
