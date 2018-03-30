@@ -3,7 +3,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 // main dependencies
 lazy val shapeless = "com.chuusai" %% "shapeless" % "2.3.2"
 lazy val shapelessMacros = compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
-lazy val cats = "org.typelevel" %% "cats" % "0.9.0"
+lazy val cats = "org.typelevel" %% "cats-core" % "1.1.0"
 
 // test dependencies
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % Test
