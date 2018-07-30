@@ -31,6 +31,18 @@ class DecoderTest extends FlatSpec with Matchers {
     }.as[Employee]
   }
 
+  it should "track max length correctly for obvious cases" in {
+    import com.github.atais.util.Read._
+    import Decoder._
+
+    val employeeCodecLength: Long = {
+      fixed[String](0, 10) <<:
+        fixed[Option[Int]](10, 13, Alignment.Right) <<:
+        fixed[Boolean](13, 18)
+    }.maxLength
+
+    employeeCodecLength shouldBe 18
+  }
 }
 
 

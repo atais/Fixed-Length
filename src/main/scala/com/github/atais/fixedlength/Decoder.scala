@@ -9,6 +9,7 @@ import scala.util.{Failure, Success, Try}
 @annotation.implicitNotFound(msg = "Implicit not found for Decoder[${A}]")
 trait Decoder[A] extends Serializable {
   def decode(str: String): Either[Throwable, A]
+  val maxLength: Long
 
   protected[fixedlength] def extraCharsAfterEnd(source: String): Option[String] = None
 }
@@ -21,6 +22,8 @@ object Decoder {
                padding: Char = ' ', defaultValue: A = null.asInstanceOf[A])
               (implicit reader: Read[A]): Decoder[A] = {
     new Decoder[A] {
+      val maxLength = end.toLong - start.toLong
+
       override def decode(str: String): Either[Throwable, A] = {
 
         def tryUsingDefaultValue(error: => Throwable) = {
@@ -60,6 +63,7 @@ object Decoder {
   }
 
   val hnilDecoder = new Decoder[HNil] {
+    val maxLength = 0L
     override def decode(str: String): Either[Throwable, HNil] = Right(HNil)
   }
 
@@ -88,11 +92,13 @@ object Decoder {
 
   final implicit class HListDecoderEnrichedWithHListSupport[L <: HList](val self: Decoder[L]) extends Serializable {
     def <<:[B](decoderB: Decoder[B]): Decoder[B :: L] = new Decoder[::[B, L]] {
+      val maxLength = decoderB.maxLength + self.maxLength
       override def decode(str: String): Either[Throwable, ::[B, L]] =
         merge(self, decoderB, str)
     }
 
     def as[B](implicit gen: Generic.Aux[B, L]): Decoder[B] = new Decoder[B] {
+      val maxLength = self.maxLength
       override def decode(str: String): Either[Throwable, B] =
         transform(self, str)
     }
@@ -102,6 +108,7 @@ object Decoder {
     def <<:[B](codecB: Decoder[B]): Decoder[B :: A :: HNil] = {
 
       val lastDecoder = new Decoder[A] {
+        val maxLength = self.maxLength
         override def decode(str: String): Either[Throwable, A] =
           decodeLast(self, str)
       }
