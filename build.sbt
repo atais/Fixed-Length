@@ -8,6 +8,8 @@ lazy val cats = "org.typelevel" %% "cats-core" % "1.1.0"
 // test dependencies
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % Test
 lazy val scalacheck = "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+lazy val discipline =  "org.typelevel" %% "discipline" % "0.9.0" % Test
+lazy val catsLaws = "org.typelevel" %% "cats-laws" % "1.1.0" % Test
 
 lazy val main = (project in file("."))
   .settings(
@@ -22,7 +24,9 @@ lazy val main = (project in file("."))
       shapeless,
       cats,
       scalatest,
-      scalacheck
+      scalacheck,
+      discipline,
+      catsLaws
     ),
     libraryDependencies ++= (if (scalaBinaryVersion.value startsWith "2.10") Seq(shapelessMacros) else Nil),
 
