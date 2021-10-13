@@ -8,7 +8,7 @@ lazy val cats = "org.typelevel" %% "cats-core" % "2.0.0"
 // test dependencies
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.2.10" % Test
 lazy val scalacheck = "org.scalacheck" %% "scalacheck" % "1.15.2" % Test
-lazy val scalatestPlus = "org.scalatestplus" %% "scalacheck-1-15" % "3.2.9.0" % Test
+lazy val scalatestPlus = "org.scalatestplus" %% "scalacheck-1-15" % "3.2.10.0" % Test
 
 lazy val main = (project in file("."))
   .settings(
