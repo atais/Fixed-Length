@@ -1,8 +1,10 @@
 package com.github.atais.fixedlength
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.EitherValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class MultipleCodecTest extends FlatSpec with Matchers {
+class MultipleCodecTest extends AnyFlatSpec with Matchers with EitherValues {
 
   case class Example1(a: String, b: String, c: String)
 
@@ -49,9 +51,9 @@ class MultipleCodecTest extends FlatSpec with Matchers {
     // implicits should be working here
     import Example1._
     import Example2._
-    Parser.decode[Example1](ex1S).right.get shouldEqual ex1
+    Parser.decode[Example1](ex1S).value shouldEqual ex1
     Parser.encode[Example1](ex1) shouldEqual ex1S
-    Parser.decode[Example2](ex2S).right.get shouldEqual ex2
+    Parser.decode[Example2](ex2S).value shouldEqual ex2
     Parser.encode[Example2](ex2) shouldEqual ex2S
   }
 

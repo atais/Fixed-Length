@@ -1,15 +1,17 @@
 package com.github.atais.fixedlength.simple
 
 import com.github.atais.fixedlength.{Alignment, Codec, Parser}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.EitherValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class CodecTest extends FlatSpec with Matchers {
+class CodecTest extends AnyFlatSpec with Matchers with EitherValues {
 
   behavior of "Codec"
 
   it should "decode example object properly" in {
     import Employee._
-    Parser.decode[Employee](exampleString).right.get shouldEqual exampleObject
+    Parser.decode[Employee](exampleString).value shouldEqual exampleObject
   }
 
   it should "encode example object properly" in {

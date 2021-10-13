@@ -1,9 +1,10 @@
 package com.github.atais.fixedlength.simple
 
 import com.github.atais.fixedlength.{Alignment, Encoder, Parser}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class EncoderTest extends FlatSpec with Matchers {
+class EncoderTest extends AnyFlatSpec with Matchers {
 
   behavior of "Encoder"
 
