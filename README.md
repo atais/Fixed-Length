@@ -10,11 +10,16 @@ You can find the `fixed-length` library on [Maven Central](http://search.maven.o
 
 Add the library to your dependencies:
 
+Library is cross-compiled for `Scala 2.12` and `2.13`.
+
 ```
-libraryDependencies += "com.github.atais" %% "fixed-length" % "0.3"
+libraryDependencies += "com.github.atais" %% "fixed-length" % "1.0.0"
 ```
 
-Library is cross-compiled for `Scala 2.10`, `2.11` and `2.12`.
+For `Scala 2.10`, `2.11` and `2.12` the latest version is:
+```
+libraryDependencies += "com.github.atais" %% "fixed-length" % "0.4.1"
+```
 
 ## Examples
 
