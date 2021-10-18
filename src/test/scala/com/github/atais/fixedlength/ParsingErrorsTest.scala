@@ -1,8 +1,10 @@
 package com.github.atais.fixedlength
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.EitherValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ParsingErrorsTest extends FlatSpec with Matchers {
+class ParsingErrorsTest extends AnyFlatSpec with Matchers with EitherValues {
 
   case class Example(a: Int, b: Int, c: Int)
 
@@ -26,8 +28,8 @@ class ParsingErrorsTest extends FlatSpec with Matchers {
     val exampleString = "12"
     val decoded = Parser.decode[Example](exampleString)
 
-    decoded.left.get shouldBe a[StringIndexOutOfBoundsException]
-    decoded.right.toOption shouldEqual None
+    decoded.left.value shouldBe a[StringIndexOutOfBoundsException]
+    decoded.toOption shouldEqual None
   }
 
   it should "return an ParsingFailedException error if input does not match expected types" in {
@@ -36,9 +38,9 @@ class ParsingErrorsTest extends FlatSpec with Matchers {
     val exampleString = "12-"
     val decoded = Parser.decode[Example](exampleString)
 
-    decoded.left.get shouldBe a[ParsingFailedException]
-    decoded.left.get.getMessage should include("-")
-    decoded.right.toOption shouldEqual None
+    decoded.left.value shouldBe a[ParsingFailedException]
+    decoded.left.value.getMessage should include("-")
+    decoded.toOption shouldEqual None
   }
 
   it should "return an LineLongerThanExpectedException error if input line is longer than expected" in {
@@ -47,9 +49,9 @@ class ParsingErrorsTest extends FlatSpec with Matchers {
     val exampleString = "1234"
     val decoded = Parser.decode[Example](exampleString)
 
-    decoded.left.get shouldBe a[LineLongerThanExpectedException]
-    decoded.left.get.getMessage should include(exampleString)
-    decoded.right.toOption shouldEqual None
+    decoded.left.value shouldBe a[LineLongerThanExpectedException]
+    decoded.left.value.getMessage should include(exampleString)
+    decoded.toOption shouldEqual None
   }
 
 

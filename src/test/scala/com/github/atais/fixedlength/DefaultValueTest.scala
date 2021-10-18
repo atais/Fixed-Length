@@ -1,8 +1,10 @@
 package com.github.atais.fixedlength
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.EitherValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DefaultValueTest extends FlatSpec with Matchers {
+class DefaultValueTest extends AnyFlatSpec with Matchers with EitherValues {
 
   val defaultValue = 0
 
@@ -28,7 +30,7 @@ class DefaultValueTest extends FlatSpec with Matchers {
     val exampleString = "12"
     val decoded = Parser.decode[Example](exampleString)
 
-    decoded.right.get.c shouldEqual defaultValue
+    decoded.value.c shouldEqual defaultValue
   }
 
 

@@ -1,10 +1,11 @@
 package com.github.atais.read
 
 import com.github.atais.util.Read._
-import org.scalatest.prop.PropertyChecks
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class ReadersTest extends FlatSpec with Matchers with PropertyChecks {
+class ReadersTest extends AnyFlatSpec with Matchers with ScalaCheckPropertyChecks {
 
   implicit val generatorDrivenConf = PropertyCheckConfiguration(minSuccessful = 5000)
 
@@ -37,7 +38,7 @@ class ReadersTest extends FlatSpec with Matchers with PropertyChecks {
   }
 
   "Any string" should "be parsed properly" in {
-    forAll { m: String => test(stringRead.read(m.toString), m) }
+    forAll { m: String => test(stringRead.read(m), m) }
   }
 
   private def test[A](returned: Either[Throwable, A], checkValue: A) = {

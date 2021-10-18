@@ -1,9 +1,11 @@
 package com.github.atais.fixedlength
 
-import org.scalatest.prop.PropertyChecks
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.EitherValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class GenericCodecTest extends FlatSpec with Matchers with PropertyChecks {
+class GenericCodecTest extends AnyFlatSpec with Matchers with ScalaCheckPropertyChecks with EitherValues {
 
   implicit val generatorDrivenConf = PropertyCheckConfiguration(minSuccessful = 5000)
 
@@ -35,7 +37,7 @@ class GenericCodecTest extends FlatSpec with Matchers with PropertyChecks {
         encoded shouldEqual stringed
 
         val decoded = Parser.decode[Example](encoded)
-        decoded.right.get shouldEqual m
+        decoded.value shouldEqual m
       }
     }
     }
