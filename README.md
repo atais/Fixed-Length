@@ -63,3 +63,18 @@ The default value of a field, which will be used in case of any decoding error.
 This will surpress any decoding errors!
 
 ## [License](https://github.com/atais/Fixed-Length/blob/master/LICENSE)
+
+### Release
+
+```
+sbt release
+```
+
+prepare file `sonatype.sbt` in `~/.sbt/1.0/` with content:
+
+```
+credentials += Credentials("Sonatype Nexus Repository Manager",
+                           "oss.sonatype.org",
+                           USERNAME,
+                           PASSWORD)
+```
