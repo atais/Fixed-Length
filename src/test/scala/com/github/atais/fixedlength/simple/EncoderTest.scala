@@ -1,6 +1,6 @@
 package com.github.atais.fixedlength.simple
 
-import com.github.atais.fixedlength.{Alignment, Encoder, Parser}
+import com.github.atais.fixedlength.{Alignment, Encoder, Parser, Truncation}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -28,8 +28,10 @@ class EncoderTest extends AnyFlatSpec with Matchers {
 
     implicit val employeeCodec: Encoder[Employee] = {
       fixed[String](0, 10) <<:
-        fixed[Option[Int]](10, 13, Alignment.Right) <<:
-        fixed[Boolean](13, 18)
+          fixed[Option[Int]](10, 13, Alignment.Right) <<:
+          fixed[Boolean](13, 18) <<:
+          fixed[String](18, 24, truncate = Truncation.Right) <<:
+          fixed[String](24, 31, truncate = Truncation.Left)
     }.as[Employee]
   }
 

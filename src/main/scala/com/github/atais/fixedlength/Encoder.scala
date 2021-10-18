@@ -12,18 +12,26 @@ object Encoder {
 
   def encode[A](obj: A)(implicit enc: Encoder[A]): String = enc.encode(obj)
 
-  def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' ')
+  def fixed[A](start: Int, end: Int, align: Alignment = Alignment.Left, padding: Char = ' ', truncate: Truncation = Truncation.None)
               (implicit write: Write[A]): Encoder[A] = {
     new Encoder[A] {
       override def encode(obj: A): String = {
         val value = write.write(obj)
+        
+        val fieldLength = end - start
+        
+        val truncatedValue = truncate match {
+          case Truncation.Left => value.take(fieldLength)
+          case Truncation.Right => value.drop(value.length - fieldLength)
+          case Truncation.None => value
+        }
 
-        val paddingSpace = (end - start) - value.length
+        val paddingSpace = fieldLength - truncatedValue.length
         val filler = padding.toString * paddingSpace
 
         align match {
-          case Alignment.Left => value + filler
-          case Alignment.Right => filler + value
+          case Alignment.Left => truncatedValue + filler
+          case Alignment.Right => filler + truncatedValue
         }
       }
     }
