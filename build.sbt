@@ -46,8 +46,8 @@ lazy val main = (project in file("."))
       commitReleaseVersion,
       tagRelease,
       ReleaseStep(action = Command.process("publishSigned", _), enableCrossBuild = true),
-      setNextVersion,
-      commitNextVersion,
+//      setNextVersion,
+//      commitNextVersion,
       ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
       pushChanges
     )
