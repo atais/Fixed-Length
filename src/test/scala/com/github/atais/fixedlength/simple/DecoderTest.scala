@@ -23,15 +23,17 @@ class DecoderTest extends AnyFlatSpec with Matchers with EitherValues {
 
   object Employee {
 
-    import com.github.atais.util.Read._
     import Decoder._
+    import com.github.atais.util.Read._
 
     implicit val employeeCodec: Decoder[Employee] = {
       fixed[String](0, 10) <<:
         fixed[Option[Int]](10, 13, Alignment.Right) <<:
         fixed[Boolean](13, 18) <<:
         fixed[String](18, 24) <<:
-        fixed[String](24, 31)
+        fixed[String](24, 31) <<:
+        fixed[String](31, 37, Alignment.Right) <<:
+        fixed[String](37, 39, Alignment.Right)
     }.as[Employee]
   }
 

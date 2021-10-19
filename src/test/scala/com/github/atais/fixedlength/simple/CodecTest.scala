@@ -31,7 +31,9 @@ class CodecTest extends AnyFlatSpec with Matchers with EitherValues {
         fixed[Option[Int]](10, 13, Alignment.Right) <<:
         fixed[Boolean](13, 18) <<:
         fixed[String](18,24, truncate = Truncation.Right) <<:
-        fixed[String](24, 31, truncate = Truncation.Left)
+        fixed[String](24, 31, truncate = Truncation.Left) <<:
+        fixed[String](31, 37, Alignment.Right, truncate = Truncation.Right) <<:
+        fixed[String](37, 39, Alignment.Right, truncate = Truncation.Left)
     }.as[Employee]
   }
 
