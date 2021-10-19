@@ -13,7 +13,7 @@ Add the library to your dependencies:
 Library is cross-compiled for `Scala 2.12` and `2.13`.
 
 ```
-libraryDependencies += "com.github.atais" %% "fixed-length" % "1.0.0"
+libraryDependencies += "com.github.atais" %% "fixed-length" % "1.1.0"
 ```
 
 For `Scala 2.10` and `2.11` the latest version is:
