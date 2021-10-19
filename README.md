@@ -59,6 +59,18 @@ Fills the remaining space in the given area with the padding Char.
 **Warning!** 
 Wrong selection of padding char may cause decoding issues! 
 
+### truncate: Truncation
+*(default value is `Truncation.None`)*
+
+Truncates a field according to the specified `start` and `end` position. Keeping the left most characters with `Truncation.Left` and the right most characters with `Truncation.Right`.
+
+Available options:
+
+* `Truncation.Left`
+* `Truncation.Right`
+* `Truncation.None`
+
+
 ### defaultValue: A (Decoder only)
 *(default value is `null`)*
 
